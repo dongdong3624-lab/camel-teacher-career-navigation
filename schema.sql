@@ -1,334 +1,177 @@
--- 駱駝教師生涯導航：PostgreSQL 初始資料庫結構
--- 建議 PostgreSQL 15+。此檔建立 schema，不會建立實際使用者帳號或密碼。
--- 請先在測試資料庫執行，正式部署前完成資安、法務與資料治理審查。
+-- 駱駝教師生涯導航｜Supabase schema 修正版
+-- 修正 42710：不再 CREATE TYPE app_role，角色改用 text + CHECK。
+-- 可重複執行建立新表與索引；不會自動重寫既有資料表的欄位。
 
-BEGIN;
+create extension if not exists pgcrypto;
 
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
+create table if not exists public.positions (
+  id text primary key,
+  name text not null unique,
+  is_active boolean not null default true,
+  created_at timestamptz not null default now()
+);
+insert into public.positions(id,name) values
+ ('admin','行政'),('mentor','導師'),('subject_teacher','科任教師')
+on conflict (id) do update set name=excluded.name;
 
-CREATE TYPE app_role AS ENUM ('teacher', 'admin');
-CREATE TYPE model_status AS ENUM ('draft', 'published', 'archived');
-CREATE TYPE plan_mode AS ENUM ('current_review', 'target_development', 'combined');
-CREATE TYPE record_status AS ENUM ('draft', 'in_progress', 'submitted', 'completed', 'paused', 'cancelled');
-CREATE TYPE task_status AS ENUM ('todo', 'in_progress', 'done', 'skipped');
-
-CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    email TEXT NOT NULL UNIQUE,
-    display_name TEXT NOT NULL,
-    auth_provider TEXT NOT NULL DEFAULT 'external',
-    provider_subject TEXT,
-    account_status TEXT NOT NULL DEFAULT 'active'
-        CHECK (account_status IN ('active', 'disabled', 'pending')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK (length(trim(email)) > 3)
+create table if not exists public.users (
+ id uuid primary key references auth.users(id) on delete cascade,
+ email text, display_name text, is_active boolean not null default true,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.user_roles (
+ id uuid primary key default gen_random_uuid(),
+ user_id uuid not null references public.users(id) on delete cascade,
+ role text not null check(role in ('teacher','admin')),
+ created_at timestamptz not null default now(), unique(user_id,role)
+);
+create table if not exists public.teacher_profiles (
+ user_id uuid primary key references public.users(id) on delete cascade,
+ current_position_id text references public.positions(id),
+ salary_grade_code text, years_of_service numeric(4,1), profile_note text,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.competency_models (
+ id uuid primary key default gen_random_uuid(),
+ position_id text not null references public.positions(id),
+ name text not null, description text,
+ created_by uuid references public.users(id) on delete set null,
+ created_at timestamptz not null default now()
+);
+create table if not exists public.competencies (
+ id uuid primary key default gen_random_uuid(), code text unique,
+ name text not null, definition text not null default '',
+ is_active boolean not null default true,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.competency_versions (
+ id uuid primary key default gen_random_uuid(),
+ model_id uuid not null references public.competency_models(id) on delete cascade,
+ version_number integer not null check(version_number>0),
+ status text not null default 'draft' check(status in ('draft','published','archived')),
+ published_at timestamptz, created_by uuid references public.users(id) on delete set null,
+ created_at timestamptz not null default now(), unique(model_id,version_number)
+);
+create unique index if not exists competency_versions_one_published_per_model
+ on public.competency_versions(model_id) where status='published';
+create table if not exists public.model_competencies (
+ id uuid primary key default gen_random_uuid(),
+ version_id uuid not null references public.competency_versions(id) on delete cascade,
+ competency_id uuid not null references public.competencies(id),
+ target_level integer not null default 4 check(target_level between 1 and 5),
+ weight numeric(6,3) not null default 1 check(weight>0),
+ is_applicable boolean not null default true, sort_order integer not null default 0,
+ unique(version_id,competency_id)
+);
+create table if not exists public.competency_indicators (
+ id uuid primary key default gen_random_uuid(),
+ competency_id uuid not null references public.competencies(id) on delete cascade,
+ level integer not null check(level between 1 and 5), description text not null,
+ created_at timestamptz not null default now(), unique(competency_id,level)
+);
+create table if not exists public.assessment_rule_versions (
+ id uuid primary key default gen_random_uuid(), version_number integer not null unique check(version_number>0),
+ status text not null default 'draft' check(status in ('draft','published','archived')),
+ scoring_method text not null default 'weighted_average',
+ gap_method text not null default 'max_zero_target_minus_score',
+ max_action_cards integer not null default 3 check(max_action_cards between 1 and 10),
+ rule_config jsonb not null default '{}'::jsonb, published_at timestamptz,
+ created_at timestamptz not null default now()
+);
+create table if not exists public.development_plans (
+ id uuid primary key default gen_random_uuid(),
+ user_id uuid not null references public.users(id) on delete cascade,
+ mode text not null check(mode in ('current_review','target_development','combined')),
+ current_position_id text references public.positions(id), target_position_id text references public.positions(id),
+ reason text, status text not null default 'active' check(status in ('active','completed','archived')),
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.assessments (
+ id uuid primary key default gen_random_uuid(),
+ user_id uuid not null references public.users(id) on delete cascade,
+ plan_id uuid references public.development_plans(id) on delete set null,
+ position_id text not null references public.positions(id),
+ competency_version_id uuid references public.competency_versions(id) on delete restrict,
+ rule_version_id uuid references public.assessment_rule_versions(id) on delete restrict,
+ status text not null default 'in_progress' check(status in ('in_progress','submitted','cancelled')),
+ overall_score numeric(5,2), note text, started_at timestamptz not null default now(), submitted_at timestamptz
+);
+create table if not exists public.assessment_responses (
+ id uuid primary key default gen_random_uuid(),
+ assessment_id uuid not null references public.assessments(id) on delete cascade,
+ competency_id uuid not null references public.competencies(id) on delete restrict,
+ score integer not null check(score between 1 and 5), response_note text,
+ created_at timestamptz not null default now(), unique(assessment_id,competency_id)
+);
+create table if not exists public.competency_results (
+ id uuid primary key default gen_random_uuid(),
+ assessment_id uuid not null references public.assessments(id) on delete cascade,
+ competency_id uuid not null references public.competencies(id) on delete restrict,
+ score numeric(5,2) not null check(score between 1 and 5),
+ target_level integer not null check(target_level between 1 and 5),
+ gap numeric(5,2) not null check(gap>=0), weight numeric(6,3) not null default 1 check(weight>0),
+ priority_rank integer, created_at timestamptz not null default now(), unique(assessment_id,competency_id)
+);
+create table if not exists public.action_templates (
+ id uuid primary key default gen_random_uuid(), competency_id uuid references public.competencies(id) on delete set null,
+ title text not null, description text not null default '',
+ suggested_duration_weeks integer not null default 1 check(suggested_duration_weeks>0),
+ is_active boolean not null default true, created_at timestamptz not null default now()
+);
+create table if not exists public.plan_action_cards (
+ id uuid primary key default gen_random_uuid(),
+ plan_id uuid not null references public.development_plans(id) on delete cascade,
+ assessment_id uuid references public.assessments(id) on delete set null,
+ competency_id uuid references public.competencies(id) on delete set null,
+ action_template_id uuid references public.action_templates(id) on delete set null,
+ title text not null, description text not null default '', priority_rank integer not null default 1,
+ status text not null default 'active' check(status in ('active','completed','paused')),
+ created_at timestamptz not null default now()
+);
+create table if not exists public.weekly_tasks (
+ id uuid primary key default gen_random_uuid(),
+ plan_id uuid not null references public.development_plans(id) on delete cascade,
+ action_card_id uuid references public.plan_action_cards(id) on delete set null,
+ week_start date not null, title text not null, description text not null default '',
+ status text not null default 'not_started' check(status in ('not_started','in_progress','completed','skipped')),
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now()
+);
+create table if not exists public.weekly_task_logs (
+ id uuid primary key default gen_random_uuid(),
+ task_id uuid not null references public.weekly_tasks(id) on delete cascade,
+ user_id uuid not null references public.users(id) on delete cascade,
+ status text not null check(status in ('not_started','in_progress','completed','skipped')),
+ note text, logged_at timestamptz not null default now()
+);
+create table if not exists public.weekly_reviews (
+ id uuid primary key default gen_random_uuid(),
+ plan_id uuid not null references public.development_plans(id) on delete cascade,
+ user_id uuid not null references public.users(id) on delete cascade,
+ week_start date not null, reflection text, next_week_intention text,
+ created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
+ unique(plan_id,week_start)
+);
+create table if not exists public.audit_logs (
+ id uuid primary key default gen_random_uuid(),
+ actor_user_id uuid references public.users(id) on delete set null,
+ action text not null, entity_table text not null, entity_id text,
+ details jsonb not null default '{}'::jsonb, created_at timestamptz not null default now()
 );
 
-CREATE UNIQUE INDEX users_provider_subject_uq
-    ON users(auth_provider, provider_subject)
-    WHERE provider_subject IS NOT NULL;
+create index if not exists assessments_user_id_idx on public.assessments(user_id);
+create index if not exists assessments_position_id_idx on public.assessments(position_id);
+create index if not exists development_plans_user_id_idx on public.development_plans(user_id);
+create index if not exists weekly_tasks_plan_week_idx on public.weekly_tasks(plan_id,week_start);
+create index if not exists competency_results_assessment_idx on public.competency_results(assessment_id);
 
-CREATE TABLE user_roles (
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role app_role NOT NULL,
-    granted_by UUID REFERENCES users(id),
-    granted_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    PRIMARY KEY (user_id, role)
-);
-
-CREATE TABLE positions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    code TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL UNIQUE,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-INSERT INTO positions(code, name, sort_order) VALUES
-('admin', '行政', 1),
-('homeroom', '導師', 2),
-('subject', '科任教師', 3)
-ON CONFLICT (code) DO NOTHING;
-
-CREATE TABLE teacher_profiles (
-    user_id UUID PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
-    current_position_id UUID REFERENCES positions(id),
-    salary_grade TEXT,
-    weekly_available_minutes INTEGER CHECK (weekly_available_minutes IS NULL OR weekly_available_minutes >= 0),
-    profile_completed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-COMMENT ON COLUMN teacher_profiles.salary_grade IS
-'僅記錄薪級／薪點級別代碼，不記錄實際薪資金額。';
-
--- 能力為跨職位共用的穩定主檔；版本化內容另存於 competency_versions。
-CREATE TABLE competencies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    code TEXT NOT NULL UNIQUE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    retired_at TIMESTAMPTZ
-);
-
-CREATE TABLE competency_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    competency_id UUID NOT NULL REFERENCES competencies(id),
-    version_no INTEGER NOT NULL CHECK (version_no > 0),
-    name TEXT NOT NULL,
-    definition TEXT NOT NULL,
-    status model_status NOT NULL DEFAULT 'draft',
-    created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (competency_id, version_no)
-);
-
-CREATE TABLE position_model_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    position_id UUID NOT NULL REFERENCES positions(id),
-    version_no INTEGER NOT NULL CHECK (version_no > 0),
-    status model_status NOT NULL DEFAULT 'draft',
-    change_summary TEXT,
-    created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    published_by UUID REFERENCES users(id),
-    published_at TIMESTAMPTZ,
-    UNIQUE (position_id, version_no),
-    CHECK (
-      (status = 'published' AND published_at IS NOT NULL)
-      OR status <> 'published'
-    )
-);
-
--- 每個職位模型版本可引用共用能力，但保有獨立目標等級、權重與排序。
-CREATE TABLE position_model_competencies (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    position_model_version_id UUID NOT NULL REFERENCES position_model_versions(id),
-    competency_version_id UUID NOT NULL REFERENCES competency_versions(id),
-    target_level NUMERIC(3,2) NOT NULL CHECK (target_level BETWEEN 1 AND 5),
-    weight NUMERIC(8,3) NOT NULL DEFAULT 1 CHECK (weight > 0),
-    is_applicable BOOLEAN NOT NULL DEFAULT TRUE,
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    UNIQUE (position_model_version_id, competency_version_id)
-);
-
-CREATE TABLE competency_domains (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    position_model_version_id UUID NOT NULL REFERENCES position_model_versions(id),
-    name TEXT NOT NULL,
-    description TEXT,
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    UNIQUE (position_model_version_id, name)
-);
-
-CREATE TABLE competency_domain_members (
-    competency_domain_id UUID NOT NULL REFERENCES competency_domains(id) ON DELETE CASCADE,
-    position_model_competency_id UUID NOT NULL REFERENCES position_model_competencies(id) ON DELETE CASCADE,
-    PRIMARY KEY (competency_domain_id, position_model_competency_id)
-);
-
-CREATE TABLE competency_indicators (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    competency_version_id UUID NOT NULL REFERENCES competency_versions(id),
-    indicator_text TEXT NOT NULL,
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    is_required BOOLEAN NOT NULL DEFAULT TRUE
-);
-
-CREATE TABLE rating_scale_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    version_no INTEGER NOT NULL UNIQUE CHECK (version_no > 0),
-    name TEXT NOT NULL,
-    status model_status NOT NULL DEFAULT 'draft',
-    created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    published_at TIMESTAMPTZ
-);
-
-CREATE TABLE rating_scale_levels (
-    rating_scale_version_id UUID NOT NULL REFERENCES rating_scale_versions(id),
-    level SMALLINT NOT NULL CHECK (level BETWEEN 1 AND 5),
-    label TEXT NOT NULL,
-    description TEXT NOT NULL,
-    PRIMARY KEY (rating_scale_version_id, level)
-);
-
-CREATE TABLE assessment_rule_versions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    version_no INTEGER NOT NULL UNIQUE CHECK (version_no > 0),
-    rule_definition JSONB NOT NULL,
-    status model_status NOT NULL DEFAULT 'draft',
-    created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    published_at TIMESTAMPTZ
-);
-
-CREATE TABLE assessment_items (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    competency_version_id UUID NOT NULL REFERENCES competency_versions(id),
-    item_code TEXT NOT NULL,
-    prompt TEXT NOT NULL,
-    help_text TEXT,
-    item_weight NUMERIC(8,3) NOT NULL DEFAULT 1 CHECK (item_weight > 0),
-    sort_order INTEGER NOT NULL DEFAULT 0,
-    is_required BOOLEAN NOT NULL DEFAULT TRUE,
-    UNIQUE (competency_version_id, item_code)
-);
-
-CREATE TABLE assessment_item_scale_descriptions (
-    assessment_item_id UUID NOT NULL REFERENCES assessment_items(id) ON DELETE CASCADE,
-    level SMALLINT NOT NULL CHECK (level BETWEEN 1 AND 5),
-    description TEXT NOT NULL,
-    PRIMARY KEY (assessment_item_id, level)
-);
-
-CREATE TABLE development_plans (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID NOT NULL REFERENCES users(id),
-    mode plan_mode NOT NULL,
-    current_position_id UUID REFERENCES positions(id),
-    target_position_id UUID REFERENCES positions(id),
-    reason TEXT,
-    status record_status NOT NULL DEFAULT 'in_progress',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK (mode <> 'current_review' OR current_position_id IS NOT NULL),
-    CHECK (mode <> 'target_development' OR target_position_id IS NOT NULL),
-    CHECK (mode <> 'combined' OR (current_position_id IS NOT NULL AND target_position_id IS NOT NULL))
-);
-
-CREATE TABLE assessments (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    plan_id UUID NOT NULL REFERENCES development_plans(id),
-    position_model_version_id UUID NOT NULL REFERENCES position_model_versions(id),
-    rating_scale_version_id UUID NOT NULL REFERENCES rating_scale_versions(id),
-    assessment_rule_version_id UUID NOT NULL REFERENCES assessment_rule_versions(id),
-    assessment_type TEXT NOT NULL CHECK (assessment_type IN ('current_review', 'target_development')),
-    status record_status NOT NULL DEFAULT 'in_progress',
-    -- 快照欄位用於保留當時題目與量尺，避免模型更新影響歷史結果。
-    model_snapshot JSONB NOT NULL DEFAULT '{}'::jsonb,
-    started_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    submitted_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK ((status <> 'submitted') OR submitted_at IS NOT NULL)
-);
-
-CREATE TABLE assessment_responses (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    assessment_id UUID NOT NULL REFERENCES assessments(id) ON DELETE CASCADE,
-    assessment_item_id UUID NOT NULL REFERENCES assessment_items(id),
-    prompt_snapshot TEXT NOT NULL,
-    rating SMALLINT CHECK (rating BETWEEN 1 AND 5),
-    comment TEXT,
-    answered_at TIMESTAMPTZ,
-    UNIQUE (assessment_id, assessment_item_id)
-);
-
-CREATE TABLE competency_results (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    assessment_id UUID NOT NULL REFERENCES assessments(id) ON DELETE CASCADE,
-    competency_version_id UUID NOT NULL REFERENCES competency_versions(id),
-    competency_name_snapshot TEXT NOT NULL,
-    score NUMERIC(5,2) NOT NULL CHECK (score BETWEEN 1 AND 5),
-    target_level NUMERIC(3,2) NOT NULL CHECK (target_level BETWEEN 1 AND 5),
-    gap NUMERIC(5,2) NOT NULL CHECK (gap >= 0),
-    signed_gap NUMERIC(5,2) NOT NULL,
-    competency_weight NUMERIC(8,3) NOT NULL DEFAULT 1 CHECK (competency_weight > 0),
-    calculated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (assessment_id, competency_version_id)
-);
-
-CREATE TABLE action_templates (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    competency_version_id UUID REFERENCES competency_versions(id),
-    title TEXT NOT NULL,
-    description TEXT NOT NULL,
-    steps JSONB NOT NULL DEFAULT '[]'::jsonb,
-    evidence_guidance TEXT,
-    is_active BOOLEAN NOT NULL DEFAULT TRUE,
-    created_by UUID REFERENCES users(id),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE plan_action_cards (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    plan_id UUID NOT NULL REFERENCES development_plans(id) ON DELETE CASCADE,
-    competency_result_id UUID REFERENCES competency_results(id),
-    template_id UUID REFERENCES action_templates(id),
-    title_snapshot TEXT NOT NULL,
-    description_snapshot TEXT NOT NULL,
-    priority_order INTEGER NOT NULL DEFAULT 1,
-    status task_status NOT NULL DEFAULT 'todo',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE weekly_tasks (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    action_card_id UUID REFERENCES plan_action_cards(id) ON DELETE CASCADE,
-    plan_id UUID NOT NULL REFERENCES development_plans(id) ON DELETE CASCADE,
-    week_start_date DATE NOT NULL,
-    title TEXT NOT NULL,
-    description TEXT,
-    status task_status NOT NULL DEFAULT 'todo',
-    due_date DATE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    CHECK (due_date IS NULL OR due_date >= week_start_date)
-);
-
-CREATE TABLE weekly_task_logs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    weekly_task_id UUID NOT NULL REFERENCES weekly_tasks(id) ON DELETE CASCADE,
-    logged_by UUID NOT NULL REFERENCES users(id),
-    logged_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    progress_note TEXT,
-    evidence_url TEXT
-);
-
-CREATE TABLE weekly_reviews (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    plan_id UUID NOT NULL REFERENCES development_plans(id) ON DELETE CASCADE,
-    week_start_date DATE NOT NULL,
-    reflection TEXT,
-    completion_rate NUMERIC(5,2) CHECK (completion_rate BETWEEN 0 AND 100),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    UNIQUE (plan_id, week_start_date)
-);
-
-CREATE TABLE audit_logs (
-    id BIGSERIAL PRIMARY KEY,
-    actor_user_id UUID REFERENCES users(id),
-    action TEXT NOT NULL,
-    entity_type TEXT NOT NULL,
-    entity_id TEXT,
-    metadata JSONB NOT NULL DEFAULT '{}'::jsonb,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE TABLE model_change_logs (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    position_model_version_id UUID REFERENCES position_model_versions(id),
-    actor_user_id UUID REFERENCES users(id),
-    change_summary TEXT NOT NULL,
-    before_snapshot JSONB,
-    after_snapshot JSONB,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
-);
-
-CREATE INDEX assessments_plan_idx ON assessments(plan_id, created_at DESC);
-CREATE INDEX assessment_responses_assessment_idx ON assessment_responses(assessment_id);
-CREATE INDEX competency_results_assessment_idx ON competency_results(assessment_id);
-CREATE INDEX weekly_tasks_plan_week_idx ON weekly_tasks(plan_id, week_start_date);
-CREATE INDEX audit_logs_entity_idx ON audit_logs(entity_type, entity_id, created_at DESC);
-
--- 安全提醒：
--- 1. 請由後端服務驗證登入身份、角色及資料擁有權。
--- 2. 不要將管理員或資料庫憑證寫入 HTML/前端 JavaScript。
--- 3. 管理員預設只能查看去識別化彙整統計，不應取得個別教師自評明細。
--- 4. 正式版應以資料庫 RLS 或等效後端授權規則限制教師只讀寫自己的資料。
--- 5. published 模型應以 trigger/後端交易保護不可直接修改；修改時建立新版本。
--- 6. 統計報表需設小樣本抑制門檻，降低重新識別風險。
-
-COMMIT;
+-- 啟用 RLS，但刻意不建立寬鬆 policies。需按 README 的安全說明另行設計並測試。
+alter table public.users enable row level security;
+alter table public.user_roles enable row level security;
+alter table public.teacher_profiles enable row level security;
+alter table public.development_plans enable row level security;
+alter table public.assessments enable row level security;
+alter table public.assessment_responses enable row level security;
+alter table public.competency_results enable row level security;
+alter table public.weekly_tasks enable row level security;
+alter table public.weekly_task_logs enable row level security;
+alter table public.weekly_reviews enable row level security;
