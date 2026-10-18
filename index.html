@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>駱駝教師生涯導航</title>
+<style>
+:root{color-scheme:light dark;--bg:light-dark(#f5f4ef,#171a19);--surface:light-dark(#fff,#222725);--surface2:light-dark(#f0f1eb,#2b302d);--text:light-dark(#25352e,#eef2ed);--muted:light-dark(#68756e,#aeb9b1);--line:light-dark(#dfe4dc,#3a433d);--green:light-dark(#315c49,#9fcbb0);--green2:light-dark(#e1eee5,#2a4034);--gold:light-dark(#c28b43,#e6bd78);--shadow:0 8px 30px #18251b0d}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:ui-sans-serif,system-ui,-apple-system,"Noto Sans TC",sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}.app{min-height:100vh;background:var(--bg)}.topbar{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;border-bottom:1px solid var(--line);background:var(--surface)}.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:.03em}.logo{width:40px;height:40px;border-radius:13px;background:#315c49;color:#fff;display:grid;place-items:center;font-size:21px}.brand small{display:block;font-size:11px;font-weight:500;color:var(--muted);letter-spacing:.08em;margin-top:2px}.top-actions{display:flex;gap:10px;align-items:center}.pill{border:1px solid var(--line);padding:8px 13px;border-radius:99px;color:var(--muted);font-size:12px}.avatar{width:36px;height:36px;border-radius:50%;background:var(--green2);color:var(--green);display:grid;place-items:center;font-weight:800}.layout{display:grid;grid-template-columns:240px minmax(0,1fr);max-width:1440px;margin:auto;min-height:calc(100vh - 72px)}aside{padding:30px 18px;border-right:1px solid var(--line)}.nav-label{font-size:11px;color:var(--muted);letter-spacing:.12em;padding:0 12px;margin:0 0 12px}.nav{width:100%;display:flex;align-items:center;gap:12px;border:0;background:transparent;color:var(--muted);padding:12px;border-radius:12px;text-align:left;margin:4px 0;font-size:14px}.nav.active,.nav:hover{background:var(--green2);color:var(--green);font-weight:700}.nav .ico{width:20px;text-align:center;font-size:17px}.aside-note{margin:38px 6px 0;padding:17px;background:var(--surface2);border-radius:16px;font-size:12px;line-height:1.7;color:var(--muted)}.aside-note strong{display:block;color:var(--text);margin-bottom:5px}.main{padding:40px clamp(20px,4vw,58px);max-width:1200px;width:100%;margin:0 auto}.eyebrow{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);font-weight:800}.heading{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin:8px 0 28px}.heading h1{font-size:clamp(26px,3vw,36px);letter-spacing:-.04em;margin:0 0 9px}.heading p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}.btn{border:1px solid var(--line);background:var(--surface);color:var(--text);padding:11px 16px;border-radius:11px;font-weight:700;font-size:13px;transition:.15s}.btn:hover{transform:translateY(-1px);box-shadow:var(--shadow)}.btn.primary{background:#315c49;color:#fff;border-color:#315c49}.btn.subtle{background:var(--green2);color:var(--green);border-color:transparent}.grid{display:grid;gap:18px}.stats{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:22px}.card{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px;box-shadow:var(--shadow);min-width:0}.stat-top{display:flex;justify-content:space-between;color:var(--muted);font-size:13px}.stat-icon{width:34px;height:34px;border-radius:10px;background:var(--green2);display:grid;place-items:center}.stat-number{font-size:32px;font-weight:800;letter-spacing:-.04em;margin:18px 0 5px}.stat-caption{font-size:12px;color:var(--muted)}.content-grid{grid-template-columns:minmax(0,1.4fr) minmax(280px,.9fr)}.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}.card h2{font-size:17px;margin:0}.text-link{background:none;border:0;color:var(--green);font-size:12px;font-weight:700}.progress-row{margin:20px 0}.progress-label{display:flex;justify-content:space-between;font-size:13px;margin-bottom:9px}.progress-label span:last-child{color:var(--muted)}.bar{height:7px;background:var(--surface2);border-radius:99px;overflow:hidden}.bar span{display:block;height:100%;border-radius:99px;background:var(--green)}.task{display:flex;gap:12px;padding:15px 0;border-bottom:1px solid var(--line);align-items:flex-start}.task:last-child{border:0}.check{appearance:none;width:19px;height:19px;border:1.5px solid var(--line);border-radius:6px;flex-shrink:0;margin-top:2px;cursor:pointer}.check:checked{background:#315c49;border-color:#315c49}.check:checked:after{content:"✓";display:block;color:white;text-align:center;font-size:13px;line-height:17px}.task-title{font-size:13px;font-weight:700}.task-desc{font-size:12px;color:var(--muted);margin-top:5px;line-height:1.6}.tag{display:inline-flex;align-items:center;padding:5px 9px;border-radius:99px;font-size:11px;background:var(--surface2);color:var(--muted);white-space:nowrap}.tag.green{background:var(--green2);color:var(--green)}.welcome{padding:26px 28px;background:linear-gradient(120deg,#284d3c,#47745a);color:white;border-radius:20px;display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:22px;overflow:hidden;position:relative}.welcome:after{content:"";position:absolute;width:220px;height:220px;border:1px solid #ffffff26;border-radius:50%;right:12%;top:-110px;box-shadow:0 0 0 30px #ffffff0c,0 0 0 60px #ffffff08}.welcome h2{font-size:22px;margin:0 0 8px}.welcome p{font-size:13px;line-height:1.7;color:#e0ece3;margin:0;max-width:540px}.welcome .btn{position:relative;z-index:1;white-space:nowrap;background:#fff;color:#315c49;border-color:#fff}.section{display:none}.section.active{display:block}.position-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.position-card{cursor:pointer;transition:.15s}.position-card:hover{transform:translateY(-2px);border-color:var(--green)}.position-card h3{margin:12px 0 8px;font-size:17px}.position-card p{font-size:12px;color:var(--muted);line-height:1.7;min-height:42px}.position-card .symbol{font-size:24px}.list-item{display:flex;justify-content:space-between;align-items:center;gap:16px;padding:15px 0;border-bottom:1px solid var(--line)}.list-item:last-child{border:0}.list-item strong{display:block;font-size:13px}.list-item small{display:block;color:var(--muted);margin-top:5px;line-height:1.6}.field{display:flex;flex-direction:column;gap:7px;margin:15px 0}.field label{font-size:12px;font-weight:700;color:var(--muted)}.field input,.field select,.field textarea{background:var(--bg);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:11px 12px;outline:none;width:100%}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green)}.field textarea{min-height:85px;resize:vertical}.scale{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin:12px 0 5px}.scale label{border:1px solid var(--line);border-radius:10px;padding:10px 5px;text-align:center;cursor:pointer;font-size:12px;color:var(--muted)}.scale input{display:none}.scale label:has(input:checked){background:var(--green2);border-color:var(--green);color:var(--green);font-weight:800}.question{padding:20px 0;border-bottom:1px solid var(--line)}.question:last-child{border:0}.question strong{font-size:14px}.question p{color:var(--muted);font-size:12px;line-height:1.7;margin:7px 0 12px}.muted{color:var(--muted)}.notice{background:var(--surface2);padding:14px 16px;border-radius:12px;color:var(--muted);font-size:12px;line-height:1.7;margin:15px 0}.table-wrap{overflow:auto}table{border-collapse:collapse;width:100%;font-size:12px}th,td{text-align:left;padding:13px 10px;border-bottom:1px solid var(--line);vertical-align:middle}th{color:var(--muted);font-weight:700;white-space:nowrap}td strong{font-size:13px}.table-action{background:none;border:0;color:var(--green);font-weight:700}.footer-note{font-size:11px;color:var(--muted);line-height:1.7;margin-top:24px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);padding:12px 18px;border-radius:12px;background:#253d30;color:white;font-size:13px;box-shadow:var(--shadow);display:none;z-index:10}.mobile-menu{display:none}.admin-banner{background:var(--surface2);padding:13px 16px;border-radius:12px;font-size:12px;color:var(--muted);margin-bottom:18px}
+@media(max-width:900px){.layout{grid-template-columns:1fr}aside{display:flex;gap:5px;overflow:auto;padding:10px 16px;border-right:0;border-bottom:1px solid var(--line);position:sticky;top:0;background:var(--bg);z-index:5}.nav-label,.aside-note{display:none}.nav{width:auto;white-space:nowrap;margin:0;padding:10px 12px}.main{padding:28px 20px}.content-grid{grid-template-columns:1fr}.position-grid{grid-template-columns:1fr}.stats{gap:10px}.card{padding:18px}.stat-number{font-size:26px}.welcome{align-items:flex-start;flex-direction:column}.welcome .btn{align-self:flex-start}}
+@media(max-width:560px){.topbar{padding:0 16px;height:64px}.brand{font-size:13px}.brand small{font-size:9px}.logo{width:36px;height:36px}.top-actions .pill{display:none}.main{padding:24px 14px}.stats{grid-template-columns:1fr}.stat-number{margin:10px 0 3px}.heading{flex-direction:column}.heading>.btn{width:100%}.scale{gap:4px}.scale label{padding:9px 2px}.card{border-radius:15px}}
+</style>
+</head>
+<body>
+<div class="app">
+<header class="topbar">
+  <div class="brand"><div class="logo">駱</div><div>駱駝教師生涯導航<small>TEACHER CAREER COMPASS</small></div></div>
+  <div class="top-actions"><span class="pill">第一階段互動原型</span><div class="avatar">師</div></div>
+</header>
+<div class="layout">
+<aside>
+  <div style="width:100%">
+    <div class="nav-label">教師工作區</div>
+    <button class="nav active" data-page="dashboard"><span class="ico">⌂</span>首頁總覽</button>
+    <button class="nav" data-page="assessment"><span class="ico">◎</span>能力自我盤點</button>
+    <button class="nav" data-page="development"><span class="ico">↗</span>職涯發展計畫</button>
+    <button class="nav" data-page="weekly"><span class="ico">✓</span>每週任務追蹤</button>
+    <div class="nav-label" style="margin-top:28px">系統管理</div>
+    <button class="nav" data-page="admin"><span class="ico">⚙</span>能力模型管理</button>
+    <div class="aside-note"><strong>每一步都算數</strong>生涯導航不是替你決定方向，而是陪你看見現況、整理選擇，再踏出適合自己的下一步。</div>
+  </div>
+</aside>
+<main class="main">
+<section class="section active" id="dashboard">
+<div class="eyebrow">YOUR CAREER COMPASS</div>
+<div class="heading"><div><h1>早安，老師。</h1><p>從理解現在的自己開始，慢慢走向想成為的教育工作者。</p></div><button class="btn primary" onclick="go('assessment')">開始能力自評　↗</button></div>
+<div class="welcome"><div><h2>你的職涯，可以有自己的步調。</h2><p>先盤點目前的能力，再選擇想探索的職位。系統會依照自評結果，協助整理能力差距與每週可執行的小步驟。</p></div><button class="btn" onclick="go('development')">規劃我的下一步</button></div>
+<div class="grid stats">
+ <div class="card"><div class="stat-top">能力自評進度 <span class="stat-icon">◎</span></div><div class="stat-number" id="stat-assess">0%</div><div class="stat-caption">完成自評後將顯示盤點狀態</div></div>
+ <div class="card"><div class="stat-top">本週任務完成 <span class="stat-icon">✓</span></div><div class="stat-number" id="stat-week">0 / 3</div><div class="stat-caption">一週一小步，不需要一次做到完美</div></div>
+ <div class="card"><div class="stat-top">目前發展方向 <span class="stat-icon">↗</span></div><div class="stat-number" style="font-size:23px" id="stat-position">尚未設定</div><div class="stat-caption">可隨時調整你的職涯目標</div></div>
+</div>
+<div class="grid content-grid">
+ <div class="card"><div class="card-head"><h2>能力成長概覽</h2><span class="tag">示意資料</span></div>
+  <div class="progress-row"><div class="progress-label"><span>教學與課程</span><span>尚未評估</span></div><div class="bar"><span style="width:8%;opacity:.25"></span></div></div>
+  <div class="progress-row"><div class="progress-label"><span>溝通與合作</span><span>尚未評估</span></div><div class="bar"><span style="width:8%;opacity:.25"></span></div></div>
+  <div class="progress-row"><div class="progress-label"><span>反思與專業成長</span><span>尚未評估</span></div><div class="bar"><span style="width:8%;opacity:.25"></span></div></div>
+  <div class="notice">這裡尚未連接正式資料庫；目前呈現的是介面原型，並非真實評量結果。</div>
+ </div>
+ <div class="card"><div class="card-head"><h2>本週的小步驟</h2><button class="text-link" onclick="go('weekly')">查看全部 →</button></div>
+  <div id="dashboard-tasks"></div>
+ </div>
+</div>
+<p class="footer-note">隱私原則：正式版預計讓教師只查看自己的個人評估；管理員預設僅查看去識別化彙整統計。此原型尚未啟用登入驗證與真實權限控管。</p>
+</section>
+
+<section class="section" id="assessment">
+<div class="eyebrow">SELF-ASSESSMENT</div><div class="heading"><div><h1>能力自我盤點</h1><p>以目前的實際經驗為參考，選擇最貼近自己的描述。沒有標準答案。</p></div><span class="tag">第一版固定規則</span></div>
+<div class="card">
+ <div class="field"><label for="assessment-position">選擇本次盤點的職位</label><select id="assessment-position"><option value="導師">導師</option><option value="科任教師">科任教師</option><option value="行政">行政</option></select></div>
+ <div class="notice">評分尺度（1–5）：1＝尚在探索、2＝開始嘗試、3＝能在一般情境運用、4＝能穩定運用、5＝能整合經驗並支持他人。正式指標與文字仍待確認。</div>
+ <div id="questions"></div>
+ <div class="field"><label for="assessment-note">補充想法（選填）</label><textarea id="assessment-note" placeholder="例如：我希望提升哪一方面？目前有哪些經驗或困難？"></textarea></div>
+ <button class="btn primary" onclick="submitAssessment()">完成自評並查看摘要</button>
+ <div id="assessment-result" style="display:none;margin-top:20px"></div>
+</div>
+</section>
+
+<section class="section" id="development">
+<div class="eyebrow">DEVELOPMENT PLAN</div><div class="heading"><div><h1>職涯發展計畫</h1><p>可以盤點現職能力，也可以探索目標職位；方向由你選擇。</p></div></div>
+<div class="card">
+ <h2>設定你的導航方向</h2>
+ <div class="field"><label for="plan-mode">計畫模式</label><select id="plan-mode"><option value="current_review">現職能力盤點</option><option value="target_development">目標職位發展</option><option value="combined">現職盤點＋目標職位發展</option></select></div>
+ <div class="field"><label for="current-position">目前職位</label><select id="current-position"><option>導師</option><option>科任教師</option><option>行政</option></select></div>
+ <div class="field"><label for="target-position">希望探索的職位</label><select id="target-position"><option>行政</option><option>導師</option><option>科任教師</option></select></div>
+ <div class="field"><label for="plan-reason">為什麼想做這份計畫？（選填）</label><textarea id="plan-reason" placeholder="例如：想更了解行政工作，或希望讓教學更有把握。"></textarea></div>
+ <button class="btn primary" onclick="savePlan()">儲存發展方向</button>
+ <div id="plan-message"></div>
+</div>
+<div class="card" style="margin-top:18px"><div class="card-head"><h2>能力差距與行動建議</h2><span class="tag">規則式示意</span></div><div id="gap-content"><p class="muted" style="font-size:13px;line-height:1.8">完成能力自評後，這裡會以自評分數與目標職位要求作比較。正式版需由管理員先發布能力模型與目標等級。</p></div></div>
+</section>
+
+<section class="section" id="weekly">
+<div class="eyebrow">WEEKLY MOMENTUM</div><div class="heading"><div><h1>每週任務追蹤</h1><p>不安排每日待辦，只記錄每週的小任務與進度。</p></div><button class="btn primary" onclick="addTask()">＋ 新增本週任務</button></div>
+<div class="card"><div class="card-head"><h2>本週任務清單</h2><span class="tag" id="weekly-count">0 項完成</span></div><div id="weekly-tasks"></div>
+ <div class="field"><label for="weekly-reflection">本週回顧</label><textarea id="weekly-reflection" placeholder="這週我完成了什麼？遇到什麼阻礙？下週想怎麼調整？" oninput="saveReflection()"></textarea></div><span class="muted" style="font-size:11px">回顧文字僅暫存在此原型的目前頁面工作階段。</span>
+</div>
+</section>
+
+<section class="section" id="admin">
+<div class="eyebrow">MODEL ADMINISTRATION</div><div class="heading"><div><h1>能力模型管理</h1><p>以可編輯的能力項目管理方式，為後續正式資料庫預留管理介面。</p></div><button class="btn primary" onclick="newCompetency()">＋ 新增能力</button></div>
+<div class="admin-banner">原型管理模式：下方資料為討論草案。正式版應加入管理員登入、權限檢查、異動紀錄與發布流程。</div>
+<div class="card"><div class="card-head"><h2>職位能力模型</h2><select id="admin-position" onchange="renderCompetencies()" style="border:1px solid var(--line);border-radius:9px;padding:8px;background:var(--bg);color:var(--text)"><option>行政</option><option>導師</option><option>科任教師</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>能力項目</th><th>定義／說明</th><th>目標等級</th><th>權重</th><th>狀態</th><th>操作</th></tr></thead><tbody id="competency-table"></tbody></table></div>
+<div class="card-head" style="margin-top:22px"><h2>版本發布流程</h2><span class="tag">草稿 → 檢查 → 發布</span></div>
+<div class="notice">已發布版本不可直接修改；如需調整，建立新草稿版本。新評估使用目前生效版本，進行中或已提交的評估保留原版本，以維持歷史結果一致性。</div>
+<button class="btn subtle" onclick="publishModel()">檢查並模擬發布草稿版本</button>
+<div id="publish-message" class="muted" style="font-size:12px;margin-top:12px"></div>
+</div>
+</section>
+</main>
+</div>
+<div class="toast" id="toast"></div>
+</div>
+<script>
+const initialCompetencies={
+"行政":[["行政計畫與工作規劃","能規劃工作目標、步驟與時程。",4,1],["法規理解與行政程序","能理解相關規範並依程序辦理。",4,1],["溝通協調與跨處室合作","能與不同角色溝通並協調合作。",4,1],["資源管理與工作分配","能適切安排人力、時間與資源。",3,1],["問題分析與決策","能釐清問題、比較方案並做出判斷。",4,1],["專案執行與進度管理","能追蹤執行進度並處理延誤。",3,1],["團隊領導與人員支持","能支持同仁並促進團隊合作。",3,1],["成效評估與持續改善","能檢視成果並調整工作方式。",4,1]],
+"導師":[["班級規範與常規建立","能建立清楚、一致且合理的班級規範。",4,1],["學生關係與班級氣氛營造","能營造尊重、安心與互助的班級氛圍。",4,1],["學生個別需求辨識","能觀察學生差異與個別需求。",4,1],["學生輔導與轉介合作","能適時尋求輔導與跨專業支持。",3,1],["親師溝通與合作","能與家長清楚溝通並建立合作關係。",4,1],["班級活動與生活教育規劃","能規劃具教育意義的班級活動。",3,1],["衝突處理與危機應對","能以合宜方式處理衝突與突發狀況。",4,1],["學生學習與身心發展追蹤","能持續關注學生學習與發展情形。",4,1]],
+"科任教師":[["課程理解與教學目標設定","能依課程內容設定清楚的學習目標。",4,1],["教學內容與教材設計","能選擇或設計合宜教材與學習活動。",4,1],["教學策略與課堂實施","能運用適當策略促進學生學習。",4,1],["學生差異與學習需求回應","能依學生差異調整教學支持。",4,1],["學習評量與回饋","能以評量了解學習並提供具體回饋。",4,1],["班級互動與課堂管理","能維持正向互動與有效課堂秩序。",3,1],["教學科技與資源運用","能適切使用科技與多元教學資源。",3,1],["教學反思與專業成長","能根據教學經驗反思並持續精進。",4,1]]
+};
+let competencies=JSON.parse(JSON.stringify(initialCompetencies));
+let answers={},tasks=[
+{id:1,title:"選擇一項想優先練習的能力",desc:"花 10 分鐘想一想本週的教學或工作情境。",done:false},
+{id:2,title:"記錄一次值得保留的經驗",desc:"寫下做得不錯的地方，以及原因。",done:false},
+{id:3,title:"安排一次小型交流或請益",desc:"找一位信任的同事，交流一個具體問題。",done:false}
+];
+let currentPlan={mode:"current_review",current:"導師",target:"行政"};
+const questionsByPosition={
+"導師":["班級規範與常規建立","學生關係與班級氣氛營造","學生個別需求辨識","學生輔導與轉介合作","親師溝通與合作","班級活動與生活教育規劃","衝突處理與危機應對","學生學習與身心發展追蹤"],
+"科任教師":["課程理解與教學目標設定","教學內容與教材設計","教學策略與課堂實施","學生差異與學習需求回應","學習評量與回饋","班級互動與課堂管理","教學科技與資源運用","教學反思與專業成長"],
+"行政":["行政計畫與工作規劃","法規理解與行政程序","溝通協調與跨處室合作","資源管理與工作分配","問題分析與決策","專案執行與進度管理","團隊領導與人員支持","成效評估與持續改善"]};
+function go(id){document.querySelectorAll('.section').forEach(x=>x.classList.toggle('active',x.id===id));document.querySelectorAll('.nav').forEach(x=>x.classList.toggle('active',x.dataset.page===id));window.scrollTo({top:0,behavior:'smooth'});if(id==='weekly')renderTasks();if(id==='admin')renderCompetencies();if(id==='assessment')renderQuestions();}
+document.querySelectorAll('.nav').forEach(b=>b.addEventListener('click',()=>go(b.dataset.page)));
+function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.style.display='block';setTimeout(()=>el.style.display='none',2400)}
+function renderQuestions(){const pos=document.getElementById('assessment-position').value;const root=document.getElementById('questions');root.innerHTML=questionsByPosition[pos].map((q,i)=>`<div class="question"><strong>${i+1}. ${q}</strong><p>${competencies[pos][i]?.[1]||'請依你目前的工作經驗評估。'}</p><div class="scale">${[1,2,3,4,5].map(n=>`<label><input type="radio" name="q${i}" value="${n}" ${answers[pos+'-'+i]===n?'checked':''}><span>${n}</span></label>`).join('')}</div><div class="muted" style="font-size:10px">1 尚在探索　·　3 一般情境可運用　·　5 能整合並支持他人</div></div>`).join('');root.querySelectorAll('input[type=radio]').forEach(input=>input.addEventListener('change',()=>{answers[pos+'-'+input.name.slice(1)]=Number(input.value)}));}
+document.getElementById('assessment-position').addEventListener('change',renderQuestions);
+function submitAssessment(){const pos=document.getElementById('assessment-position').value;const qs=questionsByPosition[pos];const missing=qs.filter((q,i)=>!answers[pos+'-'+i]);if(missing.length){toast(`還有 ${missing.length} 項尚未評分`);return;}const vals=qs.map((q,i)=>answers[pos+'-'+i]);const avg=vals.reduce((a,b)=>a+b,0)/vals.length;document.getElementById('stat-assess').textContent='100%';document.getElementById('assessment-result').style.display='block';document.getElementById('assessment-result').innerHTML=`<div class="card" style="background:var(--surface2);box-shadow:none"><div class="eyebrow">YOUR SELF-ASSESSMENT</div><h2 style="font-size:24px;margin:8px 0">平均自評 ${avg.toFixed(2)} / 5</h2><p class="muted" style="font-size:13px;line-height:1.8">本次盤點：${pos}。分數僅反映你這次的自我評估，不代表正式資格或能力認證。</p><div class="progress-row"><div class="progress-label"><span>自評完成度</span><span>8 / 8</span></div><div class="bar"><span style="width:100%"></span></div></div><button class="btn primary" onclick="buildGaps('${pos}')">查看能力差距摘要</button></div>`;buildGaps(pos);toast('自評摘要已產生（原型資料）');}
+function buildGaps(pos){const gaps=questionsByPosition[pos].map((name,i)=>({name,score:answers[pos+'-'+i],target:competencies[pos][i]?.[2]||4,weight:competencies[pos][i]?.[3]||1})).map(x=>({...x,gap:Math.max(0,x.target-x.score)})).sort((a,b)=>b.gap-a.gap||b.weight-a.weight);const root=document.getElementById('gap-content');root.innerHTML=`<p class="muted" style="font-size:12px">以下依目前的示意目標等級計算，正式結果需以管理員發布的能力模型為準。</p>`+gaps.slice(0,3).map(g=>`<div class="list-item"><div><strong>${g.name}</strong><small>自評 ${g.score} / 5 · 示意目標 ${g.target} · 差距 ${g.gap}</small></div><span class="tag ${g.gap===0?'green':''}">${g.gap===0?'符合示意目標':'可優先探索'}</span></div>`).join('');go('development');}
+function savePlan(){currentPlan={mode:document.getElementById('plan-mode').value,current:document.getElementById('current-position').value,target:document.getElementById('target-position').value};const names={current_review:'現職能力盤點',target_development:'目標職位發展',combined:'現職盤點＋目標職位發展'};document.getElementById('stat-position').textContent=currentPlan.mode==='current_review'?currentPlan.current:currentPlan.target;document.getElementById('plan-message').innerHTML=`<div class="notice">已在原型中設定：${names[currentPlan.mode]}。目前職位：${currentPlan.current}；目標職位：${currentPlan.target}。重新整理後不保證保留。</div>`;toast('已更新原型中的發展方向');}
+function renderTasks(){const done=tasks.filter(t=>t.done).length;document.getElementById('weekly-count').textContent=`${done} / ${tasks.length} 項完成`;document.getElementById('stat-week').textContent=`${done} / ${tasks.length}`;const html=tasks.map(t=>`<div class="task"><input class="check" type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id},this.checked)"><div style="flex:1"><div class="task-title" style="${t.done?'text-decoration:line-through;opacity:.65':''}">${esc(t.title)}</div><div class="task-desc">${esc(t.desc)}</div></div><span class="tag ${t.done?'green':''}">${t.done?'已完成':'本週'}</span></div>`).join('');document.getElementById('weekly-tasks').innerHTML=html;document.getElementById('dashboard-tasks').innerHTML=tasks.slice(0,3).map(t=>`<div class="task"><input class="check" type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${t.id},this.checked)"><div><div class="task-title">${esc(t.title)}</div><div class="task-desc">${t.done?'完成一小步！':'本週任務'}</div></div></div>`).join('');}
+function toggleTask(id,done){tasks=tasks.map(t=>t.id===id?{...t,done}:t);renderTasks();toast(done?'已標記完成':'已更新任務狀態')}
+function addTask(){const title=prompt('請輸入本週任務名稱');if(!title||!title.trim())return;const desc=prompt('補充任務說明（可留空）')||'本週完成一個小步驟。';tasks.push({id:Date.now(),title:title.trim(),desc,done:false});renderTasks();toast('已新增原型任務')}
+function saveReflection(){/* no persistence in prototype */}
+function renderCompetencies(){const pos=document.getElementById('admin-position').value;document.getElementById('competency-table').innerHTML=competencies[pos].map((c,i)=>`<tr><td><strong>${esc(c[0])}</strong></td><td style="min-width:200px;color:var(--muted)">${esc(c[1])}</td><td><select aria-label="目標等級" onchange="updateCompetency('${pos}',${i},2,this.value)" style="background:var(--bg);color:var(--text);border:1px solid var(--line);padding:6px;border-radius:7px">${[1,2,3,4,5].map(n=>`<option ${c[2]===n?'selected':''}>${n}</option>`).join('')}</select></td><td><select aria-label="權重" onchange="updateCompetency('${pos}',${i},3,this.value)" style="background:var(--bg);color:var(--text);border:1px solid var(--line);padding:6px;border-radius:7px">${[1,2,3].map(n=>`<option ${c[3]===n?'selected':''}>${n}</option>`).join('')}</select></td><td><span class="tag green">草案</span></td><td><button class="table-action" onclick="editCompetency('${pos}',${i})">編輯</button> <button class="table-action" onclick="deleteCompetency('${pos}',${i})">停用</button></td></tr>`).join('');}
+function updateCompetency(pos,i,idx,v){competencies[pos][i][idx]=Number(v);toast('已更新草案設定')}
+function editCompetency(pos,i){const c=competencies[pos][i];const name=prompt('能力項目名稱',c[0]);if(name===null)return;const desc=prompt('能力定義／說明',c[1]);if(desc===null)return;if(!name.trim()){toast('名稱不能空白');return;}c[0]=name.trim();c[1]=desc.trim();renderCompetencies();toast('能力草案已更新')}
+function newCompetency(){const pos=document.getElementById('admin-position').value;const name=prompt(`新增「${pos}」能力項目名稱`);if(!name||!name.trim())return;const desc=prompt('請輸入能力定義／說明')||'待補充能力定義。';competencies[pos].push([name.trim(),desc,3,1]);renderCompetencies();toast('已新增能力草案')}
+function deleteCompetency(pos,i){if(!confirm(`將「${competencies[pos][i][0]}」從此草案停用？（原型中以移除示意）`))return;competencies[pos].splice(i,1);renderCompetencies();toast('已從原型草案移除')}
+function publishModel(){const pos=document.getElementById('admin-position').value;const invalid=competencies[pos].filter(c=>!c[0].trim()||!c[1].trim());const el=document.getElementById('publish-message');if(!competencies[pos].length||invalid.length){el.textContent='尚無法發布：請確認至少有一項能力，且每項均有名稱與定義。';return;}el.textContent=`「${pos}」模型草案檢查通過（${competencies[pos].length} 項能力）。目前僅為發布流程示意，尚未寫入資料庫。`;toast('草案檢查完成')}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+renderQuestions();renderTasks();renderCompetencies();
+</script>
+</body>
+</html>

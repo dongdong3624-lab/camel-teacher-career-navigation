@@ -1,0 +1,307 @@
+{
+  "schema_version": "1.0.0",
+  "product": "駱駝教師生涯導航",
+  "purpose": "教師自我盤點與每週職涯發展行動",
+  "status": "draft",
+  "notice": "此 JSON 為討論草案與初始種子資料，能力定義、指標、目標等級與權重須由專業人員確認後才能正式發布。",
+  "positions": [
+    {
+      "code": "admin",
+      "name": "行政",
+      "model_version": 1,
+      "competencies": [
+        {
+          "code": "ADMIN_01",
+          "name": "行政計畫與工作規劃",
+          "definition": "能規劃工作目標、步驟與時程。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_02",
+          "name": "法規理解與行政程序",
+          "definition": "能理解相關規範並依程序辦理。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_03",
+          "name": "溝通協調與跨處室合作",
+          "definition": "能與不同角色溝通並協調合作。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_04",
+          "name": "資源管理與工作分配",
+          "definition": "能適切安排人力、時間與資源。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_05",
+          "name": "問題分析與決策",
+          "definition": "能釐清問題、比較方案並做出判斷。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_06",
+          "name": "專案執行與進度管理",
+          "definition": "能追蹤執行進度並處理延誤。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_07",
+          "name": "團隊領導與人員支持",
+          "definition": "能支持同仁並促進團隊合作。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "ADMIN_08",
+          "name": "成效評估與持續改善",
+          "definition": "能檢視成果並調整工作方式。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        }
+      ]
+    },
+    {
+      "code": "homeroom",
+      "name": "導師",
+      "model_version": 1,
+      "competencies": [
+        {
+          "code": "HOMEROOM_01",
+          "name": "班級規範與常規建立",
+          "definition": "能建立清楚、一致且合理的班級規範。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_02",
+          "name": "學生關係與班級氣氛營造",
+          "definition": "能營造尊重、安心與互助的班級氛圍。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_03",
+          "name": "學生個別需求辨識",
+          "definition": "能觀察學生差異與個別需求。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_04",
+          "name": "學生輔導與轉介合作",
+          "definition": "能適時尋求輔導與跨專業支持。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_05",
+          "name": "親師溝通與合作",
+          "definition": "能與家長清楚溝通並建立合作關係。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_06",
+          "name": "班級活動與生活教育規劃",
+          "definition": "能規劃具教育意義的班級活動。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_07",
+          "name": "衝突處理與危機應對",
+          "definition": "能以合宜方式處理衝突與突發狀況。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "HOMEROOM_08",
+          "name": "學生學習與身心發展追蹤",
+          "definition": "能持續關注學生學習與發展情形。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        }
+      ]
+    },
+    {
+      "code": "subject",
+      "name": "科任教師",
+      "model_version": 1,
+      "competencies": [
+        {
+          "code": "SUBJECT_01",
+          "name": "課程理解與教學目標設定",
+          "definition": "能依課程內容設定清楚的學習目標。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_02",
+          "name": "教學內容與教材設計",
+          "definition": "能選擇或設計合宜教材與學習活動。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_03",
+          "name": "教學策略與課堂實施",
+          "definition": "能運用適當策略促進學生學習。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_04",
+          "name": "學生差異與學習需求回應",
+          "definition": "能依學生差異調整教學支持。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_05",
+          "name": "學習評量與回饋",
+          "definition": "能以評量了解學習並提供具體回饋。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_06",
+          "name": "班級互動與課堂管理",
+          "definition": "能維持正向互動與有效課堂秩序。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_07",
+          "name": "教學科技與資源運用",
+          "definition": "能適切使用科技與多元教學資源。",
+          "target_level": 3,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        },
+        {
+          "code": "SUBJECT_08",
+          "name": "教學反思與專業成長",
+          "definition": "能根據教學經驗反思並持續精進。",
+          "target_level": 4,
+          "weight": 1,
+          "active": true,
+          "behavior_indicators": []
+        }
+      ]
+    }
+  ],
+  "rating_scale": [
+    {
+      "level": 1,
+      "label": "尚在探索",
+      "description": "尚未熟悉此能力，仍在理解與探索階段。"
+    },
+    {
+      "level": 2,
+      "label": "開始嘗試",
+      "description": "能在支持下嘗試運用此能力。"
+    },
+    {
+      "level": 3,
+      "label": "一般情境可運用",
+      "description": "能在一般工作情境中獨立運用此能力。"
+    },
+    {
+      "level": 4,
+      "label": "穩定運用",
+      "description": "能穩定處理常見與較複雜的情境。"
+    },
+    {
+      "level": 5,
+      "label": "整合並支持他人",
+      "description": "能整合經驗、調整策略並支持同儕成長。"
+    }
+  ],
+  "assessment_rules": {
+    "rule_version": 1,
+    "rating_min": 1,
+    "rating_max": 5,
+    "require_all_items_before_submit": true,
+    "competency_score": "加權平均；分數計算與四捨五入政策正式上線前須確認。",
+    "gap": "max(0, target_level - competency_score)",
+    "priority_order": [
+      "gap_desc",
+      "position_competency_weight_desc",
+      "stable_sort_order"
+    ],
+    "overall_score": null,
+    "note": "目前不定義跨能力整體分數；系統不以 AI 決定分數。"
+  },
+  "development_plan_modes": [
+    {
+      "code": "current_review",
+      "name": "現職能力盤點"
+    },
+    {
+      "code": "target_development",
+      "name": "目標職位發展"
+    },
+    {
+      "code": "combined",
+      "name": "現職盤點＋目標職位發展"
+    }
+  ],
+  "weekly_tracking": {
+    "daily_tasks_enabled": false,
+    "weekly_tasks_enabled": true,
+    "supports_weekly_reflection": true
+  }
+}
