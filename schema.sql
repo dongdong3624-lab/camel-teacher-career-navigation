@@ -1,18 +1,21 @@
--- 駱駝教師生涯導航｜Supabase schema 修正版
--- 修正 42710：不再 CREATE TYPE app_role，角色改用 text + CHECK。
--- 可重複執行建立新表與索引；不會自動重寫既有資料表的欄位。
+-- 駱駝教師生涯導航｜Supabase schema v3
+-- 修正重點：positions.id 是 UUID，因此不再把 'admin'、'mentor' 等文字塞入 UUID 欄位。
+-- positions.code 才存放穩定的文字代碼。可在全新 Supabase 專案執行。
+-- 若已建立舊版同名資料表，請先備份並依 README 的遷移說明處理，IF NOT EXISTS 不會改變既有欄位型別。
 
 create extension if not exists pgcrypto;
 
 create table if not exists public.positions (
-  id text primary key,
+  id uuid primary key default gen_random_uuid(),
+  code text not null unique,
   name text not null unique,
   is_active boolean not null default true,
   created_at timestamptz not null default now()
 );
-insert into public.positions(id,name) values
+
+insert into public.positions(code,name) values
  ('admin','行政'),('mentor','導師'),('subject_teacher','科任教師')
-on conflict (id) do update set name=excluded.name;
+on conflict (code) do update set name=excluded.name;
 
 create table if not exists public.users (
  id uuid primary key references auth.users(id) on delete cascade,
@@ -27,13 +30,13 @@ create table if not exists public.user_roles (
 );
 create table if not exists public.teacher_profiles (
  user_id uuid primary key references public.users(id) on delete cascade,
- current_position_id text references public.positions(id),
+ current_position_id uuid references public.positions(id),
  salary_grade_code text, years_of_service numeric(4,1), profile_note text,
  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
 create table if not exists public.competency_models (
  id uuid primary key default gen_random_uuid(),
- position_id text not null references public.positions(id),
+ position_id uuid not null references public.positions(id),
  name text not null, description text,
  created_by uuid references public.users(id) on delete set null,
  created_at timestamptz not null default now()
@@ -82,7 +85,7 @@ create table if not exists public.development_plans (
  id uuid primary key default gen_random_uuid(),
  user_id uuid not null references public.users(id) on delete cascade,
  mode text not null check(mode in ('current_review','target_development','combined')),
- current_position_id text references public.positions(id), target_position_id text references public.positions(id),
+ current_position_id uuid references public.positions(id), target_position_id uuid references public.positions(id),
  reason text, status text not null default 'active' check(status in ('active','completed','archived')),
  created_at timestamptz not null default now(), updated_at timestamptz not null default now()
 );
@@ -90,7 +93,7 @@ create table if not exists public.assessments (
  id uuid primary key default gen_random_uuid(),
  user_id uuid not null references public.users(id) on delete cascade,
  plan_id uuid references public.development_plans(id) on delete set null,
- position_id text not null references public.positions(id),
+ position_id uuid not null references public.positions(id),
  competency_version_id uuid references public.competency_versions(id) on delete restrict,
  rule_version_id uuid references public.assessment_rule_versions(id) on delete restrict,
  status text not null default 'in_progress' check(status in ('in_progress','submitted','cancelled')),
@@ -164,7 +167,6 @@ create index if not exists development_plans_user_id_idx on public.development_p
 create index if not exists weekly_tasks_plan_week_idx on public.weekly_tasks(plan_id,week_start);
 create index if not exists competency_results_assessment_idx on public.competency_results(assessment_id);
 
--- 啟用 RLS，但刻意不建立寬鬆 policies。需按 README 的安全說明另行設計並測試。
 alter table public.users enable row level security;
 alter table public.user_roles enable row level security;
 alter table public.teacher_profiles enable row level security;
